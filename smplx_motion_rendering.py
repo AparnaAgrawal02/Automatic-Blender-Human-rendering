@@ -35,8 +35,13 @@ import inspect
 import numpy as np
 import time
 
-for num in range(20):
+for num in range(100,180):
     strt = time.time()
+    #remove old objects
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.ops.object.select_by_type(type='MESH')
+    bpy.ops.object.delete()
+
 
     file = "/ssd_scratch/cvit/aparna/blender_final/smplx_animation/question/"+str(num)+".npz"
     #data = np.load(r"C:/Users/aparn/OneDrive/Desktop/bedlam_render/blender/smplx_anim_to_alembic/animate/animation_sign.npz", allow_pickle=True)
