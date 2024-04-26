@@ -1,5 +1,6 @@
 #& 'C:/Program Files/Blender Foundation/Blender 3.6/blender.exe'  -b ../signlanguage_smplerx.blend --python ./try.py^
 import bpy
+import os
 # from genmotion.render.blender.utils import *
 # bpy.data.scenes['Scene'].render.engine = 'CYCLES'
 # bpy.data.scenes['Scene'].cycles.device = 'GPU'
@@ -42,22 +43,34 @@ for num in range(100,180):
     bpy.ops.object.select_by_type(type='MESH')
     bpy.ops.object.delete()
 
-
-    file = "/ssd_scratch/cvit/aparna/blender_final/smplx_animation/question/"+str(num)+".npz"
+    # "C:\\Users\\aparn\\Desktop\\m_01_alb.002.png"
+    file = "/ssd_scratch/cvit/aparna/blender_final/female/smplx_animation/answer/"+str(num)+".npz"
     #data = np.load(r"C:/Users/aparn/OneDrive/Desktop/bedlam_render/blender/smplx_anim_to_alembic/animate/animation_sign.npz", allow_pickle=True)
-    bpy.data.window_managers["WinMan"].smplx_tool.smplx_gender = 'neutral'
+    bpy.data.window_managers["WinMan"].smplx_tool.smplx_gender = 'female'
     bpy.data.window_managers["WinMan"].smplx_tool.smplx_corrective_poseshapes = True
 
     #bpy.context.view_layer.objects.active = bpy.data.objects['SMPLX-neutral']
-    #bpy.data.window_managers["WinMan"].smplx_tool.smplx_texture='smplx_texture_f_alb.png'
-    bpy.data.window_managers["WinMan"].smplx_tool.smplx_texture='smplx_texture_m_alb.png'
+    #bpy.context.space_data.shading.type = 'MATERIAL'
+
+    
+
     bpy.ops.object.smplx_add_animation(filepath=file,hand_reference='RELAXED' , anim_format='SMPL-X')
     bpy.ops.object.smplx_set_poseshapes()
-    bpy.ops.object.smplx_set_texture()
+    bpy.ops.material.new()
+    mat = bpy.data.materials['Material']
+    mat.use_nodes = True
+    bsdf = mat.node_tree.nodes["Principled BSDF"]
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",os.path.exists("/home2/aparna/f.png"))
+    bpy.ops.image.open(filepath="/home2/aparna/f.png", directory="/home2/aparna/", files=[{"name":"f.png", "name":"f.png"}], show_multiview=False)
+    texImage = mat.node_tree.nodes.new('ShaderNodeTexImage')
+    texImage.image = bpy.data.images['f.png']
+    mat.node_tree.links.new(bsdf.inputs['Base Color'], texImage.outputs['Color'])
+    bpy.context.object.active_material = mat
+    
 
 
     #data = np.load(r"C:/Users/aparn/OneDrive/Desktop/bedlam_render/blender/smplx_anim_to_alembic/animate/animation_sign.npz", allow_pickle=True)
-    bpy.context.scene.render.filepath = '/ssd_scratch/cvit/aparna/blender_final/question/smpl_anim_['+ str(num)+']'
+    bpy.context.scene.render.filepath = '/ssd_scratch/cvit/aparna/blender_final/female/answer/smpl_anim_'+ str(num)+'_'
     data = np.load(file, allow_pickle=True)
     frames = data['trans'].shape[0]
     print(frames)
@@ -65,6 +78,9 @@ for num in range(100,180):
     bpy.ops.render.render(animation=True, use_viewport=True)
     end = time.time()
     print(end-strt)
+
+
+
 
 
 
